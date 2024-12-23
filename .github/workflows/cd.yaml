@@ -16,8 +16,9 @@ jobs:
         with:
           version: latest
       - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
-          kubectl config view  # Debug step to verify kubectl configuration
+        run: | 
+          mkdir -p $HOME/.kube 
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config 
+          kubectl config view
       - name: Get Pods
         run: kubectl get pods
