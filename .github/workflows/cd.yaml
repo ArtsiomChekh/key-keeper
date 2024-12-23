@@ -15,12 +15,16 @@ jobs:
         uses: azure/setup-kubectl@v4
         with:
           version: latest
-      - name: Configure kubectl
+      - name: Configure kubectl with Secrets
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-          kubectl config view
-      - name: Get Pods
-        run: kubectl set image deploy key-keeper key-keeper=qbchak/key-keeper:latest
+          echo "${{ secrets.KUBE_CERTIFICATE }}"  > $HOME/.kube/ca.crt
+          echo "${{ secrets.KUBE_CLIENT_CERT }}"  > $HOME/.kube/client.crt
+          echo "${{ secrets.KUBE_CLIENT_KEY }}"   > $HOME/.kube/client.key
 
+          kubectl config set-cluster minikube-cluster — server=https://192.168.49.2:8443 — certificate-authority=$HOME/.kube/ca.crt
+          kubectl config set-credentials minikube-user — client-certificate=$HOME/.kube/client.crt — client-key=$HOME/.kube/client.key
+          kubectl config set-context minikube-context — cluster=minikube-cluster — user=minikube-user
+          kubectl config use-context minikube-context
+      - name: Get Pods
+        run: kubectl get pods
