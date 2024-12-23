@@ -18,9 +18,9 @@ jobs:
       - name: Configure kubectl with Secrets
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CA }}" > $HOME/.kube/ca.crt
-          echo "${{ secrets.KUBE_CLIENT_CERT }}" > $HOME/.kube/client.crt
-          echo "${{ secrets.KUBE_CLIENT_KEY }}" > $HOME/.kube/client.key
+          echo "${{ secrets.KUBE_CA }}" | base64 --decode > $HOME/.kube/ca.crt
+          echo "${{ secrets.KUBE_CLIENT_CERT }}" | base64 --decode > $HOME/.kube/client.crt
+          echo "${{ secrets.KUBE_CLIENT_KEY }}" | base64 --decode > $HOME/.kube/client.key
 
           kubectl config set-cluster minikube-cluster --server=${{ secrets.KUBE_HOST }} --certificate-authority=$HOME/.kube/ca.crt
           kubectl config set-credentials minikube-user --client-certificate=$HOME/.kube/client.crt --client-key=$HOME/.kube/client.key
