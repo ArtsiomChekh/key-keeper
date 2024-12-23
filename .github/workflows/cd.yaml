@@ -16,9 +16,10 @@ jobs:
         with:
           version: latest
       - name: Configure kubectl
-        run: | 
-          mkdir -p $HOME/.kube 
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config 
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
           kubectl config view
       - name: Get Pods
         run: kubectl get pods
