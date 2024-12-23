@@ -1,17 +1,23 @@
 name: CD
+
 on:
   workflow_run:
     workflows: [ CI ]
     types:
       - completed
+
 jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
       - name: Install kubectl
-        uses: actions-hub/kubectl@master
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        uses: azure/setup-kubectl@v4
         with:
-          args: get pods
+          version: latest
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          kubectl config view  # Debug step to verify kubectl configuration
+      - name: Get Pods
+        run: kubectl get pods
