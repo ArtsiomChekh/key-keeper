@@ -22,4 +22,5 @@ jobs:
           chmod 600 $HOME/.kube/config
           kubectl config view
       - name: Get Pods
-        run: kubectl get pods
+        run: kubectl set image deploy key-keeper key-keeper=qbchak/key-keeper:latest
+
